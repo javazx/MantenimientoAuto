@@ -1,0 +1,250 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Vehículo - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-plus me-2"></i>
+        Registrar Nuevo Vehículo
+    </h1>
+    <a href="{{ url_for('vehiculos') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Volver
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-car me-2"></i>
+                    Información del Vehículo
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-3">
+                        <!-- Información del vehículo -->
+                        <div class="col-md-6">
+                            <label for="marca" class="form-label">
+                                <i class="fas fa-tag me-1"></i>Marca *
+                            </label>
+                            <select class="form-select" id="marca" name="marca" required>
+                                <option value="">Seleccionar marca...</option>
+                                <option value="BMW">BMW</option>
+                                <option value="MINI">MINI</option>
+                                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                                <option value="Audi">Audi</option>
+                                <option value="Volkswagen">Volkswagen</option>
+                                <option value="Toyota">Toyota</option>
+                                <option value="Honda">Honda</option>
+                                <option value="Nissan">Nissan</option>
+                                <option value="Ford">Ford</option>
+                                <option value="Chevrolet">Chevrolet</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="modelo" class="form-label">
+                                <i class="fas fa-car-side me-1"></i>Modelo *
+                            </label>
+                            <input type="text" class="form-control" id="modelo" name="modelo" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="año" class="form-label">
+                                <i class="fas fa-calendar me-1"></i>Año *
+                            </label>
+                            <select class="form-select" id="año" name="año" required>
+                                <option value="">Seleccionar año...</option>
+                                {% for año in range(2025, 1999, -1) %}
+                                <option value="{{ año }}">{{ año }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="color" class="form-label">
+                                <i class="fas fa-palette me-1"></i>Color *
+                            </label>
+                            <input type="text" class="form-control" id="color" name="color" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="placas" class="form-label">
+                                <i class="fas fa-id-card me-1"></i>Placas *
+                            </label>
+                            <input type="text" class="form-control" id="placas" name="placas" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="vin" class="form-label">
+                                <i class="fas fa-barcode me-1"></i>Número VIN
+                            </label>
+                            <input type="text" class="form-control" id="vin" name="vin" maxlength="17">
+                            <small class="text-muted">Número de identificación del vehículo (opcional)</small>
+                        </div>
+                        
+                        <div class="col-12">
+                            <hr>
+                            <h6 class="text-primary">
+                                <i class="fas fa-user me-2"></i>
+                                Información del Cliente
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="cliente_nombre" class="form-label">
+                                <i class="fas fa-user me-1"></i>Nombre del Cliente *
+                            </label>
+                            <input type="text" class="form-control" id="cliente_nombre" name="cliente_nombre" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="cliente_telefono" class="form-label">
+                                <i class="fas fa-phone me-1"></i>Teléfono
+                            </label>
+                            <input type="tel" class="form-control" id="cliente_telefono" name="cliente_telefono">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="cliente_email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Email
+                            </label>
+                            <input type="email" class="form-control" id="cliente_email" name="cliente_email">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="observaciones" class="form-label">
+                                <i class="fas fa-sticky-note me-1"></i>Observaciones
+                            </label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Descripción del problema, servicios requeridos, etc."></textarea>
+                        </div>
+                        
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                                    <i class="fas fa-times me-2"></i>
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    Registrar Vehículo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel lateral con información -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información Útil
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Consejos
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Verifica que las placas sean correctas
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            El VIN es opcional pero recomendado
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Incluye información de contacto del cliente
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mb-3">
+                    <h6 class="text-primary">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Campos Obligatorios
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-1">
+                            <small class="text-muted">• Marca y modelo</small>
+                        </li>
+                        <li class="mb-1">
+                            <small class="text-muted">• Año del vehículo</small>
+                        </li>
+                        <li class="mb-1">
+                            <small class="text-muted">• Color</small>
+                        </li>
+                        <li class="mb-1">
+                            <small class="text-muted">• Placas</small>
+                        </li>
+                        <li class="mb-1">
+                            <small class="text-muted">• Nombre del cliente</small>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-clock me-2"></i>
+                    <strong>Proceso:</strong> Después de registrar el vehículo, podrás crear cotizaciones y gestionar el servicio.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación de formulario
+    const form = document.querySelector('form');
+    const placasInput = document.getElementById('placas');
+    const vinInput = document.getElementById('vin');
+    
+    // Formatear placas (mayúsculas)
+    placasInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    // Formatear VIN (mayúsculas)
+    vinInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    // Validación antes de enviar
+    form.addEventListener('submit', function(e) {
+        const placas = placasInput.value.trim();
+        const vin = vinInput.value.trim();
+        
+        if (vin && vin.length !== 17) {
+            e.preventDefault();
+            alert('El número VIN debe tener exactamente 17 caracteres.');
+            vinInput.focus();
+            return;
+        }
+        
+        if (placas.length < 5) {
+            e.preventDefault();
+            alert('Las placas deben tener al menos 5 caracteres.');
+            placasInput.focus();
+            return;
+        }
+    });
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,350 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Vehículo - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-edit me-2"></i>
+        Editar Vehículo
+    </h1>
+    <a href="{{ url_for('vehiculos') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Volver
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-car me-2"></i>
+                    Información del Vehículo
+                </h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row g-3">
+                        <!-- Información del vehículo -->
+                        <div class="col-md-6">
+                            <label for="marca" class="form-label">
+                                <i class="fas fa-tag me-1"></i>Marca *
+                            </label>
+                            <select class="form-select" id="marca" name="marca" required>
+                                <option value="">Seleccionar marca...</option>
+                                <option value="BMW" {% if vehiculo.marca == 'BMW' %}selected{% endif %}>BMW</option>
+                                <option value="MINI" {% if vehiculo.marca == 'MINI' %}selected{% endif %}>MINI</option>
+                                <option value="Mercedes-Benz" {% if vehiculo.marca == 'Mercedes-Benz' %}selected{% endif %}>Mercedes-Benz</option>
+                                <option value="Audi" {% if vehiculo.marca == 'Audi' %}selected{% endif %}>Audi</option>
+                                <option value="Volkswagen" {% if vehiculo.marca == 'Volkswagen' %}selected{% endif %}>Volkswagen</option>
+                                <option value="Toyota" {% if vehiculo.marca == 'Toyota' %}selected{% endif %}>Toyota</option>
+                                <option value="Honda" {% if vehiculo.marca == 'Honda' %}selected{% endif %}>Honda</option>
+                                <option value="Nissan" {% if vehiculo.marca == 'Nissan' %}selected{% endif %}>Nissan</option>
+                                <option value="Ford" {% if vehiculo.marca == 'Ford' %}selected{% endif %}>Ford</option>
+                                <option value="Chevrolet" {% if vehiculo.marca == 'Chevrolet' %}selected{% endif %}>Chevrolet</option>
+                                <option value="Otro" {% if vehiculo.marca == 'Otro' %}selected{% endif %}>Otro</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="modelo" class="form-label">
+                                <i class="fas fa-car-side me-1"></i>Modelo *
+                            </label>
+                            <input type="text" class="form-control" id="modelo" name="modelo" value="{{ vehiculo.modelo }}" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="año" class="form-label">
+                                <i class="fas fa-calendar me-1"></i>Año *
+                            </label>
+                            <select class="form-select" id="año" name="año" required>
+                                <option value="">Seleccionar año...</option>
+                                {% for año in range(2025, 1999, -1) %}
+                                <option value="{{ año }}" {% if vehiculo.año == año %}selected{% endif %}>{{ año }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="color" class="form-label">
+                                <i class="fas fa-palette me-1"></i>Color *
+                            </label>
+                            <input type="text" class="form-control" id="color" name="color" value="{{ vehiculo.color }}" required>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <label for="placas" class="form-label">
+                                <i class="fas fa-id-card me-1"></i>Placas *
+                            </label>
+                            <input type="text" class="form-control" id="placas" name="placas" value="{{ vehiculo.placas }}" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="vin" class="form-label">
+                                <i class="fas fa-barcode me-1"></i>Número VIN
+                            </label>
+                            <input type="text" class="form-control" id="vin" name="vin" value="{{ vehiculo.vin or '' }}" maxlength="17">
+                            <small class="text-muted">Número de identificación del vehículo (opcional)</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="estado" class="form-label">
+                                <i class="fas fa-info-circle me-1"></i>Estado *
+                            </label>
+                            <select class="form-select" id="estado" name="estado" required>
+                                <option value="en_taller" {% if vehiculo.estado == 'en_taller' %}selected{% endif %}>En Taller</option>
+                                <option value="terminado" {% if vehiculo.estado == 'terminado' %}selected{% endif %}>Terminado</option>
+                                <option value="entregado" {% if vehiculo.estado == 'entregado' %}selected{% endif %}>Entregado</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-12">
+                            <hr>
+                            <h6 class="text-primary">
+                                <i class="fas fa-user me-2"></i>
+                                Información del Cliente
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="cliente_nombre" class="form-label">
+                                <i class="fas fa-user me-1"></i>Nombre del Cliente *
+                            </label>
+                            <input type="text" class="form-control" id="cliente_nombre" name="cliente_nombre" value="{{ vehiculo.cliente_nombre }}" required>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="cliente_telefono" class="form-label">
+                                <i class="fas fa-phone me-1"></i>Teléfono
+                            </label>
+                            <input type="tel" class="form-control" id="cliente_telefono" name="cliente_telefono" value="{{ vehiculo.cliente_telefono or '' }}">
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="cliente_email" class="form-label">
+                                <i class="fas fa-envelope me-1"></i>Email
+                            </label>
+                            <input type="email" class="form-control" id="cliente_email" name="cliente_email" value="{{ vehiculo.cliente_email or '' }}">
+                        </div>
+                        
+                        <div class="col-12">
+                            <label for="observaciones" class="form-label">
+                                <i class="fas fa-sticky-note me-1"></i>Observaciones
+                            </label>
+                            <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Descripción del problema, servicios requeridos, etc.">{{ vehiculo.observaciones or '' }}</textarea>
+                        </div>
+                        
+                        <!-- Información de fechas -->
+                        <div class="col-12">
+                            <hr>
+                            <h6 class="text-primary">
+                                <i class="fas fa-calendar-alt me-2"></i>
+                                Información de Fechas
+                            </h6>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="fecha_entrada" class="form-label">
+                                <i class="fas fa-sign-in-alt me-1"></i>Fecha de Entrada
+                            </label>
+                            <input type="datetime-local" class="form-control" id="fecha_entrada" name="fecha_entrada" 
+                                   value="{{ vehiculo.fecha_entrada.strftime('%Y-%m-%dT%H:%M') }}" required>
+                            <small class="text-muted">Fecha y hora de entrada del vehículo al taller</small>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label for="fecha_salida" class="form-label">
+                                <i class="fas fa-sign-out-alt me-1"></i>Fecha de Salida
+                            </label>
+                            <input type="datetime-local" class="form-control" id="fecha_salida" name="fecha_salida" 
+                                   value="{% if vehiculo.fecha_salida %}{{ vehiculo.fecha_salida.strftime('%Y-%m-%dT%H:%M') }}{% endif %}">
+                            <small class="text-muted">Fecha y hora de salida del vehículo (opcional)</small>
+                        </div>
+                        
+                        <div class="col-12">
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                                    <i class="fas fa-times me-2"></i>
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-2"></i>
+                                    Actualizar Vehículo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel lateral con información -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información del Vehículo
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary">
+                        <i class="fas fa-car me-2"></i>
+                        Detalles Actuales
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <strong>ID:</strong> {{ vehiculo.id }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Estado:</strong> 
+                            {% if vehiculo.estado == 'en_taller' %}
+                                <span class="badge bg-warning">En Taller</span>
+                            {% elif vehiculo.estado == 'terminado' %}
+                                <span class="badge bg-success">Terminado</span>
+                            {% elif vehiculo.estado == 'entregado' %}
+                                <span class="badge bg-info">Entregado</span>
+                            {% endif %}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Registrado por:</strong> {{ vehiculo.usuario.nombre_completo }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>Fecha registro:</strong> {{ vehiculo.fecha_entrada.strftime('%d/%m/%Y') }}
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-lightbulb me-2"></i>
+                    <strong>Consejo:</strong> Puedes editar las fechas de entrada y salida usando los selectores de fecha y hora. Al cambiar el estado a "Entregado", se completará automáticamente la fecha de salida si está vacía.
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Importante:</strong> Los cambios en la información del vehículo se guardarán inmediatamente.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Acciones rápidas -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('nueva_cotizacion', vehiculo_id=vehiculo.id) }}" class="btn btn-success">
+                        <i class="fas fa-file-invoice-dollar me-2"></i>
+                        Crear Cotización
+                    </a>
+                    <a href="{{ url_for('vehiculos') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-list me-2"></i>
+                        Ver Todos los Vehículos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const placasInput = document.getElementById('placas');
+    const vinInput = document.getElementById('vin');
+    const estadoSelect = document.getElementById('estado');
+    const fechaEntradaInput = document.getElementById('fecha_entrada');
+    const fechaSalidaInput = document.getElementById('fecha_salida');
+    
+    // Formatear placas (mayúsculas)
+    placasInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    // Formatear VIN (mayúsculas)
+    vinInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+    
+    // Configurar fecha mínima para fecha de salida
+    fechaEntradaInput.addEventListener('change', function() {
+        fechaSalidaInput.min = this.value;
+        if (fechaSalidaInput.value && fechaSalidaInput.value < this.value) {
+            fechaSalidaInput.value = this.value;
+        }
+    });
+    
+    // Validar que fecha de salida no sea anterior a fecha de entrada
+    fechaSalidaInput.addEventListener('change', function() {
+        if (this.value && fechaEntradaInput.value && this.value < fechaEntradaInput.value) {
+            alert('La fecha de salida no puede ser anterior a la fecha de entrada.');
+            this.value = fechaEntradaInput.value;
+        }
+    });
+    
+    // Auto-completar fecha de salida cuando se marca como entregado
+    estadoSelect.addEventListener('change', function() {
+        if (this.value === 'entregado' && !fechaSalidaInput.value) {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            fechaSalidaInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
+        }
+    });
+    
+    // Validación antes de enviar
+    form.addEventListener('submit', function(e) {
+        const placas = placasInput.value.trim();
+        const vin = vinInput.value.trim();
+        
+        if (vin && vin.length !== 17) {
+            e.preventDefault();
+            alert('El número VIN debe tener exactamente 17 caracteres.');
+            vinInput.focus();
+            return;
+        }
+        
+        if (placas.length < 5) {
+            e.preventDefault();
+            alert('Las placas deben tener al menos 5 caracteres.');
+            placasInput.focus();
+            return;
+        }
+        
+        // Validar fechas
+        if (fechaSalidaInput.value && fechaEntradaInput.value && fechaSalidaInput.value < fechaEntradaInput.value) {
+            e.preventDefault();
+            alert('La fecha de salida no puede ser anterior a la fecha de entrada.');
+            fechaSalidaInput.focus();
+            return;
+        }
+        
+        // Confirmar cambio de estado
+        if (estadoSelect.value === 'entregado') {
+            if (!confirm('¿Estás seguro de que quieres marcar este vehículo como entregado? Esto registrará la fecha de salida.')) {
+                e.preventDefault();
+                return;
+            }
+        }
+    });
+    
+    // Inicializar fecha mínima para fecha de salida
+    if (fechaEntradaInput.value) {
+        fechaSalidaInput.min = fechaEntradaInput.value;
+    }
+});
+</script>
+{% endblock %} 

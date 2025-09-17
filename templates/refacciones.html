@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+
+{% block title %}Refacciones - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-cogs me-2"></i>
+        Catálogo de Refacciones
+    </h1>
+    <a href="{{ url_for('nueva_refaccion') }}" class="btn btn-primary">
+        <i class="fas fa-plus me-2"></i>
+        Nueva Refacción
+    </a>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="filtroCategoria" class="form-label">Categoría</label>
+                <select class="form-select" id="filtroCategoria">
+                    <option value="">Todas</option>
+                    <option value="Motor">Motor</option>
+                    <option value="Frenos">Frenos</option>
+                    <option value="Suspensión">Suspensión</option>
+                    <option value="Eléctrico">Eléctrico</option>
+                    <option value="Transmisión">Transmisión</option>
+                    <option value="Carrocería">Carrocería</option>
+                    <option value="Interior">Interior</option>
+                    <option value="Otro">Otro</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filtroNombre" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="filtroNombre" placeholder="Buscar por nombre...">
+            </div>
+            <div class="col-md-3">
+                <label for="filtroCodigo" class="form-label">Código</label>
+                <input type="text" class="form-control" id="filtroCodigo" placeholder="Buscar por código...">
+            </div>
+            <div class="col-md-3">
+                <label for="filtroStock" class="form-label">Stock</label>
+                <select class="form-select" id="filtroStock">
+                    <option value="">Todos</option>
+                    <option value="disponible">Disponible</option>
+                    <option value="agotado">Agotado</option>
+                    <option value="bajo">Stock Bajo</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de refacciones -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Lista de Refacciones
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if refacciones %}
+        <div class="table-responsive">
+            <table class="table table-hover" id="tablaRefacciones">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Refacción</th>
+                        <th>Categoría</th>
+                        <th>Precio</th>
+                        <th>Stock</th>
+                        <th>Proveedor</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for refaccion in refacciones %}
+                    <tr data-categoria="{{ refaccion.categoria or '' }}" data-nombre="{{ refaccion.nombre.lower() }}" data-codigo="{{ refaccion.codigo.lower() }}" data-stock="{{ refaccion.stock }}">
+                        <td>
+                            <span class="badge bg-secondary">{{ refaccion.codigo }}</span>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ refaccion.nombre }}</strong>
+                                {% if refaccion.descripcion %}
+                                <br>
+                                <small class="text-muted">{{ refaccion.descripcion[:50] }}{% if refaccion.descripcion|length > 50 %}...{% endif %}</small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            {% if refaccion.categoria %}
+                                <span class="badge bg-info">{{ refaccion.categoria }}</span>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <strong class="text-success">${{ "%.2f"|format(refaccion.precio) }}</strong>
+                        </td>
+                        <td>
+                            {% if refaccion.stock > 10 %}
+                                <span class="badge bg-success">{{ refaccion.stock }}</span>
+                            {% elif refaccion.stock > 0 %}
+                                <span class="badge bg-warning">{{ refaccion.stock }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">Agotado</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if refaccion.proveedor %}
+                                <small>{{ refaccion.proveedor }}</small>
+                            {% else %}
+                                <span class="text-muted">-</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <button type="button" class="btn btn-outline-primary" title="Editar" onclick="editarRefaccion({{ refaccion.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-info" title="Ver Detalles" onclick="verDetallesRefaccion({{ refaccion.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-success" title="Agregar a Cotización" onclick="agregarACotizacion({{ refaccion.id }})">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-cogs fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">No hay refacciones registradas</h5>
+            <p class="text-muted">Comienza agregando refacciones al catálogo</p>
+            <a href="{{ url_for('nueva_refaccion') }}" class="btn btn-primary">
+                <i class="fas fa-plus me-2"></i>
+                Agregar Refacción
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de detalles -->
+<div class="modal fade" id="modalDetallesRefaccion" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-cogs me-2"></i>
+                    Detalles de la Refacción
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalDetallesRefaccionBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filtros de tabla
+document.addEventListener('DOMContentLoaded', function() {
+    const filtroCategoria = document.getElementById('filtroCategoria');
+    const filtroNombre = document.getElementById('filtroNombre');
+    const filtroCodigo = document.getElementById('filtroCodigo');
+    const filtroStock = document.getElementById('filtroStock');
+    const tabla = document.getElementById('tablaRefacciones');
+    const filas = tabla.querySelectorAll('tbody tr');
+
+    function aplicarFiltros() {
+        const categoria = filtroCategoria.value.toLowerCase();
+        const nombre = filtroNombre.value.toLowerCase();
+        const codigo = filtroCodigo.value.toLowerCase();
+        const stock = filtroStock.value;
+
+        filas.forEach(fila => {
+            const filaCategoria = fila.dataset.categoria.toLowerCase();
+            const filaNombre = fila.dataset.nombre;
+            const filaCodigo = fila.dataset.codigo;
+            const filaStock = parseInt(fila.dataset.stock);
+
+            const coincideCategoria = !categoria || filaCategoria === categoria;
+            const coincideNombre = !nombre || filaNombre.includes(nombre);
+            const coincideCodigo = !codigo || filaCodigo.includes(codigo);
+            
+            let coincideStock = true;
+            if (stock === 'disponible') {
+                coincideStock = filaStock > 10;
+            } else if (stock === 'agotado') {
+                coincideStock = filaStock === 0;
+            } else if (stock === 'bajo') {
+                coincideStock = filaStock > 0 && filaStock <= 10;
+            }
+
+            if (coincideCategoria && coincideNombre && coincideCodigo && coincideStock) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    }
+
+    filtroCategoria.addEventListener('change', aplicarFiltros);
+    filtroNombre.addEventListener('input', aplicarFiltros);
+    filtroCodigo.addEventListener('input', aplicarFiltros);
+    filtroStock.addEventListener('change', aplicarFiltros);
+});
+
+// Funciones placeholder
+function editarRefaccion(id) {
+    alert('Función de edición en desarrollo para la refacción ID: ' + id);
+}
+
+function verDetallesRefaccion(id) {
+    alert('Función de detalles en desarrollo para la refacción ID: ' + id);
+}
+
+function agregarACotizacion(id) {
+    alert('Función de agregar a cotización en desarrollo para la refacción ID: ' + id);
+}
+</script>
+{% endblock %} 

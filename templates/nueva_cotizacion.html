@@ -1,0 +1,355 @@
+{% extends "base.html" %}
+
+{% block title %}Nueva Cotización - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-plus me-2"></i>
+        Crear Nueva Cotización
+    </h1>
+    <a href="{{ url_for('cotizaciones') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left me-2"></i>
+        Volver
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>
+                    Información de la Cotización
+                </h5>
+            </div>
+            <div class="card-body">
+                <!-- Información del vehículo -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="text-primary">
+                            <i class="fas fa-car me-2"></i>
+                            Vehículo Seleccionado
+                        </h6>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong><br>
+                                        <small class="text-muted">{{ vehiculo.año }} | {{ vehiculo.color }}</small>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Placas:</strong> {{ vehiculo.placas }}<br>
+                                        <strong>Cliente:</strong> {{ vehiculo.cliente_nombre }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST" id="cotizacionForm">
+                    <!-- Selección de refacciones -->
+                    <div class="mb-4">
+                        <h6 class="text-primary">
+                            <i class="fas fa-cogs me-2"></i>
+                            Refacciones y Servicios
+                        </h6>
+                        
+                        <div id="refaccionesContainer">
+                            <div class="row g-3 mb-3" id="refaccionRow0">
+                                <div class="col-md-4">
+                                    <label class="form-label">Refacción</label>
+                                    <select class="form-select refaccion-select" name="refacciones[]" onchange="actualizarPrecio(0)">
+                                        <option value="">Seleccionar refacción...</option>
+                                        {% for refaccion in refacciones %}
+                                        <option value="{{ refaccion.id }}" data-precio="{{ refaccion.precio }}" data-stock="{{ refaccion.stock }}">
+                                            {{ refaccion.codigo }} - {{ refaccion.nombre }} (${{ "%.2f"|format(refaccion.precio) }})
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Cantidad</label>
+                                    <input type="number" class="form-control cantidad-input" name="cantidades[]" min="1" value="1" onchange="calcularSubtotal(0)">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Precio Unit.</label>
+                                    <input type="text" class="form-control precio-unitario" readonly value="$0.00">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Subtotal</label>
+                                    <input type="text" class="form-control subtotal-item" readonly value="$0.00">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="eliminarRefaccion(0)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button type="button" class="btn btn-outline-primary btn-sm" onclick="agregarRefaccion()">
+                            <i class="fas fa-plus me-2"></i>
+                            Agregar Refacción
+                        </button>
+                    </div>
+
+                    <!-- Totales -->
+                    <div class="row mb-4">
+                        <div class="col-md-6 offset-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <div class="row mb-2">
+                                        <div class="col-6">Subtotal:</div>
+                                        <div class="col-6 text-end">
+                                            <span id="subtotalDisplay">$0.00</span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-6">IVA (16%):</div>
+                                        <div class="col-6 text-end">
+                                            <span id="ivaDisplay">$0.00</span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-6"><strong>Total:</strong></div>
+                                        <div class="col-6 text-end">
+                                            <strong class="text-success" id="totalDisplay">$0.00</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Observaciones -->
+                    <div class="mb-4">
+                        <label for="observaciones" class="form-label">
+                            <i class="fas fa-sticky-note me-1"></i>Observaciones
+                        </label>
+                        <textarea class="form-control" id="observaciones" name="observaciones" rows="4" placeholder="Observaciones adicionales, condiciones especiales, etc."></textarea>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="d-flex justify-content-between">
+                        <button type="button" class="btn btn-outline-secondary" onclick="history.back()">
+                            <i class="fas fa-times me-2"></i>
+                            Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-2"></i>
+                            Crear Cotización
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel lateral -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información Útil
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <h6 class="text-primary">
+                        <i class="fas fa-lightbulb me-2"></i>
+                        Consejos
+                    </h6>
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Selecciona todas las refacciones necesarias
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Verifica cantidades y precios
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-success me-2"></i>
+                            Incluye observaciones relevantes
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-calculator me-2"></i>
+                    <strong>Cálculo Automático:</strong> El IVA se calcula automáticamente al 16%.
+                </div>
+                
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>Stock:</strong> Verifica la disponibilidad de las refacciones antes de crear la cotización.
+                </div>
+            </div>
+        </div>
+        
+        <!-- Resumen de refacciones disponibles -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-list me-2"></i>
+                    Refacciones Disponibles
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small class="text-muted">Total de refacciones:</small>
+                    <div class="fw-bold">{{ refacciones|length }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Categorías:</small>
+                    <div class="fw-bold">
+                        {% set categorias = refacciones|map(attribute='categoria')|unique|list %}
+                        {{ categorias|length }}
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Precio promedio:</small>
+                    <div class="fw-bold">
+                        {% set precios = refacciones|map(attribute='precio')|list %}
+                        {% if precios %}
+                            ${{ "%.2f"|format(precios|sum / precios|length) }}
+                        {% else %}
+                            $0.00
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let refaccionCount = 1;
+
+function agregarRefaccion() {
+    const container = document.getElementById('refaccionesContainer');
+    const newRow = document.createElement('div');
+    newRow.className = 'row g-3 mb-3';
+    newRow.id = `refaccionRow${refaccionCount}`;
+    
+    newRow.innerHTML = `
+        <div class="col-md-4">
+            <label class="form-label">Refacción</label>
+            <select class="form-select refaccion-select" name="refacciones[]" onchange="actualizarPrecio(${refaccionCount})">
+                <option value="">Seleccionar refacción...</option>
+                {% for refaccion in refacciones %}
+                <option value="{{ refaccion.id }}" data-precio="{{ refaccion.precio }}" data-stock="{{ refaccion.stock }}">
+                    {{ refaccion.codigo }} - {{ refaccion.nombre }} (${{ "%.2f"|format(refaccion.precio) }})
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Cantidad</label>
+            <input type="number" class="form-control cantidad-input" name="cantidades[]" min="1" value="1" onchange="calcularSubtotal(${refaccionCount})">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Precio Unit.</label>
+            <input type="text" class="form-control precio-unitario" readonly value="$0.00">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Subtotal</label>
+            <input type="text" class="form-control subtotal-item" readonly value="$0.00">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">&nbsp;</label>
+            <button type="button" class="btn btn-outline-danger btn-sm w-100" onclick="eliminarRefaccion(${refaccionCount})">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
+    `;
+    
+    container.appendChild(newRow);
+    refaccionCount++;
+}
+
+function eliminarRefaccion(index) {
+    const row = document.getElementById(`refaccionRow${index}`);
+    if (row) {
+        row.remove();
+        calcularTotales();
+    }
+}
+
+function actualizarPrecio(index) {
+    const select = document.querySelector(`#refaccionRow${index} .refaccion-select`);
+    const precioInput = document.querySelector(`#refaccionRow${index} .precio-unitario`);
+    const cantidadInput = document.querySelector(`#refaccionRow${index} .cantidad-input`);
+    
+    if (select.value) {
+        const option = select.options[select.selectedIndex];
+        const precio = parseFloat(option.dataset.precio);
+        precioInput.value = `$${precio.toFixed(2)}`;
+        calcularSubtotal(index);
+    } else {
+        precioInput.value = '$0.00';
+        calcularSubtotal(index);
+    }
+}
+
+function calcularSubtotal(index) {
+    const select = document.querySelector(`#refaccionRow${index} .refaccion-select`);
+    const cantidadInput = document.querySelector(`#refaccionRow${index} .cantidad-input`);
+    const subtotalInput = document.querySelector(`#refaccionRow${index} .subtotal-item`);
+    
+    if (select.value && cantidadInput.value) {
+        const option = select.options[select.selectedIndex];
+        const precio = parseFloat(option.dataset.precio);
+        const cantidad = parseInt(cantidadInput.value);
+        const subtotal = precio * cantidad;
+        subtotalInput.value = `$${subtotal.toFixed(2)}`;
+    } else {
+        subtotalInput.value = '$0.00';
+    }
+    
+    calcularTotales();
+}
+
+function calcularTotales() {
+    let subtotal = 0;
+    const subtotalInputs = document.querySelectorAll('.subtotal-item');
+    
+    subtotalInputs.forEach(input => {
+        const valor = parseFloat(input.value.replace('$', '')) || 0;
+        subtotal += valor;
+    });
+    
+    const iva = subtotal * 0.16;
+    const total = subtotal + iva;
+    
+    document.getElementById('subtotalDisplay').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('ivaDisplay').textContent = `$${iva.toFixed(2)}`;
+    document.getElementById('totalDisplay').textContent = `$${total.toFixed(2)}`;
+}
+
+// Validación del formulario
+document.getElementById('cotizacionForm').addEventListener('submit', function(e) {
+    const refacciones = document.querySelectorAll('select[name="refacciones[]"]');
+    let tieneRefacciones = false;
+    
+    refacciones.forEach(select => {
+        if (select.value) {
+            tieneRefacciones = true;
+        }
+    });
+    
+    if (!tieneRefacciones) {
+        e.preventDefault();
+        alert('Debes seleccionar al menos una refacción para crear la cotización.');
+        return;
+    }
+});
+</script>
+{% endblock %} 

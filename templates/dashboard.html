@@ -1,0 +1,321 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex align-items-center">
+        <img src="{{ url_for('static', filename='images/myLogo.png') }}" alt="Logo" height="50" class="me-3">
+        <h1 class="h3 mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            Dashboard
+        </h1>
+    </div>
+    <div class="text-muted">
+        <i class="fas fa-calendar me-1"></i>
+        <span id="fechaActual"></span>
+    </div>
+</div>
+
+<!-- Estadísticas principales -->
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ vehiculos_en_taller }}</div>
+                    <div class="stats-label">Vehículos en Taller</div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-car fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ vehiculos_terminados }}</div>
+                    <div class="stats-label">Servicios Terminados</div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-check-circle fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="stats-number">{{ total_vehiculos }}</div>
+                    <div class="stats-label">Total de Vehículos</div>
+                </div>
+                <div class="ms-3">
+                    <i class="fas fa-clipboard-list fa-2x opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+<div class="row g-4 mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-bolt me-2"></i>
+                    Acciones Rápidas
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <a href="{{ url_for('nuevo_vehiculo') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus me-2"></i>
+                            Nuevo Vehículo
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('nueva_refaccion') }}" class="btn btn-success w-100">
+                            <i class="fas fa-cogs me-2"></i>
+                            Nueva Refacción
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('vehiculos') }}" class="btn btn-info w-100">
+                            <i class="fas fa-car me-2"></i>
+                            Ver Vehículos
+                        </a>
+                    </div>
+                    <div class="col-md-3">
+                        <a href="{{ url_for('cotizaciones') }}" class="btn btn-warning w-100">
+                            <i class="fas fa-file-invoice-dollar me-2"></i>
+                            Cotizaciones
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vehículos recientes -->
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Vehículos Recientes
+                </h5>
+                <a href="{{ url_for('vehiculos') }}" class="btn btn-sm btn-outline-primary">
+                    Ver Todos
+                </a>
+            </div>
+            <div class="card-body">
+                {% if vehiculos_recientes %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Vehículo</th>
+                                <th>Cliente</th>
+                                <th>Estado</th>
+                                <th>Fecha Entrada</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vehiculo in vehiculos_recientes %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <i class="fas fa-car text-primary me-2"></i>
+                                        <div>
+                                            <strong>{{ vehiculo.marca }} {{ vehiculo.modelo }}</strong>
+                                            <br>
+                                            <small class="text-muted">{{ vehiculo.placas }}</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>
+                                        <strong>{{ vehiculo.cliente_nombre }}</strong>
+                                        {% if vehiculo.cliente_telefono %}
+                                        <br>
+                                        <small class="text-muted">{{ vehiculo.cliente_telefono }}</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if vehiculo.estado == 'en_taller' %}
+                                        <span class="badge bg-warning">En Taller</span>
+                                    {% elif vehiculo.estado == 'terminado' %}
+                                        <span class="badge bg-success">Terminado</span>
+                                    {% elif vehiculo.estado == 'entregado' %}
+                                        <span class="badge bg-info">Entregado</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <small>{{ vehiculo.fecha_entrada.strftime('%d/%m/%Y %H:%M') }}</small>
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ url_for('editar_vehiculo', id=vehiculo.id) }}" class="btn btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <a href="{{ url_for('nueva_cotizacion', vehiculo_id=vehiculo.id) }}" class="btn btn-outline-success">
+                                            <i class="fas fa-file-invoice-dollar"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-car fa-3x text-muted mb-3"></i>
+                    <h6 class="text-muted">No hay vehículos registrados</h6>
+                    <a href="{{ url_for('nuevo_vehiculo') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-2"></i>
+                        Registrar Primer Vehículo
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Panel lateral -->
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Resumen del Día
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Vehículos en Taller</span>
+                        <span class="badge bg-warning">{{ vehiculos_en_taller }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-warning" id="progressEnTaller" data-en-taller="{{ vehiculos_en_taller }}" data-total="{{ total_vehiculos }}" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span>Servicios Terminados</span>
+                        <span class="badge bg-success">{{ vehiculos_terminados }}</span>
+                    </div>
+                    <div class="progress" style="height: 8px;">
+                        <div class="progress-bar bg-success" id="progressTerminados" data-terminados="{{ vehiculos_terminados }}" data-total="{{ total_vehiculos }}" style="width: 0%"></div>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <div class="text-center">
+                    <h6 class="text-muted mb-2">Eficiencia del Taller</h6>
+                    <div class="display-6 text-primary fw-bold">
+                        {% if total_vehiculos > 0 %}
+                            {{ "%.1f"|format((vehiculos_terminados / total_vehiculos) * 100) }}%
+                        {% else %}
+                            0%
+                        {% endif %}
+                    </div>
+                    <small class="text-muted">Tasa de finalización</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información del sistema -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Información del Sistema
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-2">
+                    <small class="text-muted">Usuario actual:</small>
+                    <div class="fw-bold">{{ current_user.nombre_completo }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Rol:</small>
+                    <div class="fw-bold text-capitalize">{{ current_user.rol }}</div>
+                </div>
+                <div class="mb-2">
+                    <small class="text-muted">Último acceso:</small>
+                    <div class="fw-bold">{{ current_user.fecha_registro.strftime('%d/%m/%Y %H:%M') }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Mostrar fecha actual
+function mostrarFechaActual() {
+    const fecha = new Date();
+    const opciones = { 
+        weekday: 'long', 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric' 
+    };
+    const fechaFormateada = fecha.toLocaleDateString('es-ES', opciones);
+    document.getElementById('fechaActual').textContent = fechaFormateada;
+}
+
+// Auto-refresh de estadísticas cada 30 segundos
+setInterval(function() {
+    location.reload();
+}, 30000);
+
+// Animaciones para las tarjetas de estadísticas
+document.addEventListener('DOMContentLoaded', function() {
+    // Mostrar fecha actual
+    mostrarFechaActual();
+    
+    // Calcular y mostrar barras de progreso
+    const progressEnTaller = document.getElementById('progressEnTaller');
+    const progressTerminados = document.getElementById('progressTerminados');
+    
+    const enTaller = parseInt(progressEnTaller.dataset.enTaller);
+    const terminados = parseInt(progressTerminados.dataset.terminados);
+    const total = parseInt(progressEnTaller.dataset.total);
+    
+    const divisor = total > 0 ? total : 1;
+    progressEnTaller.style.width = (enTaller / divisor * 100) + '%';
+    progressTerminados.style.width = (terminados / divisor * 100) + '%';
+    
+    const statsCards = document.querySelectorAll('.stats-card');
+    statsCards.forEach((card, index) => {
+        setTimeout(() => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100);
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %} 

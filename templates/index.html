@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="welcome-section text-center">
+    <div class="container">
+        <div class="mb-4 d-flex justify-content-center">
+            <img src="{{ url_for('static', filename='images/myLogo.png') }}" alt="Logo" height="100" class="mb-3">
+        </div>
+        <h1 class="display-4 fw-bold mb-3">
+            Mantenimiento BMW/Mini
+        </h1>
+        <h2 class="h3 mb-4">Toluca y Metepec</h2>
+        <p class="lead mb-4">Sistema de gestión integral para el control de vehículos, refacciones y cotizaciones</p>
+        {% if not current_user.is_authenticated %}
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('login') }}" class="btn btn-light btn-lg px-4">
+                <i class="fas fa-sign-in-alt me-2"></i>
+                Iniciar Sesión
+            </a>
+        </div>
+        {% else %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-light btn-lg px-4">
+            <i class="fas fa-tachometer-alt me-2"></i>
+            Ir al Dashboard
+        </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        <!-- Características principales -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-car fa-3x text-primary"></i>
+                    </div>
+                    <h5 class="card-title">Gestión de Vehículos</h5>
+                    <p class="card-text">Control completo de entrada y salida de automóviles con información detallada del cliente y estado del servicio.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-cogs fa-3x text-success"></i>
+                    </div>
+                    <h5 class="card-title">Catálogo de Refacciones</h5>
+                    <p class="card-text">Inventario completo de repuestos con precios, stock y proveedores para un control eficiente.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center">
+                <div class="card-body">
+                    <div class="mb-3">
+                        <i class="fas fa-file-invoice-dollar fa-3x text-warning"></i>
+                    </div>
+                    <h5 class="card-title">Cotizaciones Profesionales</h5>
+                    <p class="card-text">Generación automática de cotizaciones con exportación a PDF y Excel para presentación al cliente.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-lg-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Acerca del Sistema
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <p class="mb-3">Este sistema está diseñado específicamente para el taller <strong>Mantenimiento BMW/Mini Toluca y Metepec</strong>, proporcionando una solución completa para:</p>
+                    
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Registro de Vehículos:</strong> Entrada y salida con información completa del cliente
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Gestión de Inventario:</strong> Control de refacciones, precios y stock
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Cotizaciones Automáticas:</strong> Cálculo de costos con IVA incluido
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Reportes Profesionales:</strong> Exportación a PDF y Excel
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Dashboard Interactivo:</strong> Estadísticas en tiempo real
+                        </li>
+                    </ul>
+                    
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        <strong>Seguridad:</strong> Sistema de autenticación robusto con control de acceso por roles.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Información de contacto -->
+    <div class="row mt-5">
+        <div class="col-lg-6 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0">
+                        <i class="fas fa-map-marker-alt me-2"></i>
+                        Información de Contacto
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Toluca</h6>
+                            <p class="mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Dirección del taller
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-phone me-2"></i>
+                                (722) XXX-XXXX
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">Metepec</h6>
+                            <p class="mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                Dirección del taller
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-phone me-2"></i>
+                                (722) XXX-XXXX
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <p class="mb-0">
+                            <i class="fas fa-envelope me-2"></i>
+                            contacto@bmwminitaller.com
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.welcome-section {
+    width: 100vw;
+    max-width: 100%;
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    color: white;
+    border-radius: 2rem;
+    margin: 2rem 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 32px rgba(30,58,138,0.10);
+}
+@media (max-width: 991px) {
+    .welcome-section {
+        border-radius: 0;
+        margin: 0 0 2rem 0;
+    }
+}
+</style>
+{% endblock %} 

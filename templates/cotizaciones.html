@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Cotizaciones - Mantenimiento BMW/Mini{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="h3 mb-0">
+        <i class="fas fa-file-invoice-dollar me-2"></i>
+        Gestión de Cotizaciones
+    </h1>
+    <div>
+        <a href="{{ url_for('vehiculos') }}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-car me-2"></i>
+            Seleccionar Vehículo
+        </a>
+    </div>
+</div>
+
+<!-- Filtros -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="filtroEstado" class="form-label">Estado</label>
+                <select class="form-select" id="filtroEstado">
+                    <option value="">Todos</option>
+                    <option value="pendiente">Pendiente</option>
+                    <option value="aprobada">Aprobada</option>
+                    <option value="rechazada">Rechazada</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="filtroCliente" class="form-label">Cliente</label>
+                <input type="text" class="form-control" id="filtroCliente" placeholder="Buscar por cliente...">
+            </div>
+            <div class="col-md-3">
+                <label for="filtroFecha" class="form-label">Fecha</label>
+                <input type="date" class="form-control" id="filtroFecha">
+            </div>
+            <div class="col-md-3">
+                <label for="filtroTotal" class="form-label">Rango de Total</label>
+                <select class="form-select" id="filtroTotal">
+                    <option value="">Todos</option>
+                    <option value="bajo">$0 - $5,000</option>
+                    <option value="medio">$5,000 - $15,000</option>
+                    <option value="alto">$15,000+</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tabla de cotizaciones -->
+<div class="card">
+    <div class="card-header">
+        <h5 class="mb-0">
+            <i class="fas fa-list me-2"></i>
+            Lista de Cotizaciones
+        </h5>
+    </div>
+    <div class="card-body">
+        {% if cotizaciones %}
+        <div class="table-responsive">
+            <table class="table table-hover" id="tablaCotizaciones">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Vehículo</th>
+                        <th>Cliente</th>
+                        <th>Fecha</th>
+                        <th>Total</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cotizacion in cotizaciones %}
+                    <tr data-estado="{{ cotizacion.estado }}" data-cliente="{{ cotizacion.vehiculo.cliente_nombre.lower() }}" data-fecha="{{ cotizacion.fecha_creacion.strftime('%Y-%m-%d') }}" data-total="{{ cotizacion.total }}">
+                        <td>
+                            <span class="badge bg-secondary">#{{ cotizacion.id }}</span>
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-car text-primary me-2"></i>
+                                <div>
+                                    <strong>{{ cotizacion.vehiculo.marca }} {{ cotizacion.vehiculo.modelo }}</strong>
+                                    <br>
+                                    <small class="text-muted">{{ cotizacion.vehiculo.placas }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>
+                                <strong>{{ cotizacion.vehiculo.cliente_nombre }}</strong>
+                                {% if cotizacion.vehiculo.cliente_telefono %}
+                                <br>
+                                <small class="text-muted">
+                                    <i class="fas fa-phone me-1"></i>{{ cotizacion.vehiculo.cliente_telefono }}
+                                </small>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <small>{{ cotizacion.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </td>
+                        <td>
+                            <div>
+                                <strong class="text-success">${{ "%.2f"|format(cotizacion.total) }}</strong>
+                                <br>
+                                <small class="text-muted">
+                                    Subtotal: ${{ "%.2f"|format(cotizacion.subtotal) }}
+                                </small>
+                            </div>
+                        </td>
+                        <td>
+                            {% if cotizacion.estado == 'pendiente' %}
+                                <span class="badge bg-warning">Pendiente</span>
+                            {% elif cotizacion.estado == 'aprobada' %}
+                                <span class="badge bg-success">Aprobada</span>
+                            {% elif cotizacion.estado == 'rechazada' %}
+                                <span class="badge bg-danger">Rechazada</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('cotizacion_pdf', id=cotizacion.id) }}" class="btn btn-outline-danger" title="Descargar PDF">
+                                    <i class="fas fa-file-pdf"></i>
+                                </a>
+                                <a href="{{ url_for('cotizacion_excel', id=cotizacion.id) }}" class="btn btn-outline-success" title="Descargar Excel">
+                                    <i class="fas fa-file-excel"></i>
+                                </a>
+                                <button type="button" class="btn btn-outline-info" title="Ver Detalles" onclick="verDetallesCotizacion({{ cotizacion.id }})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" title="Editar" onclick="editarCotizacion({{ cotizacion.id }})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-file-invoice-dollar fa-4x text-muted mb-3"></i>
+            <h5 class="text-muted">No hay cotizaciones registradas</h5>
+            <p class="text-muted">Comienza creando una cotización para un vehículo</p>
+            <a href="{{ url_for('vehiculos') }}" class="btn btn-primary">
+                <i class="fas fa-car me-2"></i>
+                Seleccionar Vehículo
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal de detalles -->
+<div class="modal fade" id="modalDetallesCotizacion" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>
+                    Detalles de la Cotización
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="modalDetallesCotizacionBody">
+                <!-- Contenido dinámico -->
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Filtros de tabla
+document.addEventListener('DOMContentLoaded', function() {
+    const filtroEstado = document.getElementById('filtroEstado');
+    const filtroCliente = document.getElementById('filtroCliente');
+    const filtroFecha = document.getElementById('filtroFecha');
+    const filtroTotal = document.getElementById('filtroTotal');
+    const tabla = document.getElementById('tablaCotizaciones');
+    const filas = tabla.querySelectorAll('tbody tr');
+
+    function aplicarFiltros() {
+        const estado = filtroEstado.value.toLowerCase();
+        const cliente = filtroCliente.value.toLowerCase();
+        const fecha = filtroFecha.value;
+        const total = filtroTotal.value;
+
+        filas.forEach(fila => {
+            const filaEstado = fila.dataset.estado;
+            const filaCliente = fila.dataset.cliente;
+            const filaFecha = fila.dataset.fecha;
+            const filaTotal = parseFloat(fila.dataset.total);
+
+            const coincideEstado = !estado || filaEstado === estado;
+            const coincideCliente = !cliente || filaCliente.includes(cliente);
+            const coincideFecha = !fecha || filaFecha === fecha;
+            
+            let coincideTotal = true;
+            if (total === 'bajo') {
+                coincideTotal = filaTotal >= 0 && filaTotal <= 5000;
+            } else if (total === 'medio') {
+                coincideTotal = filaTotal > 5000 && filaTotal <= 15000;
+            } else if (total === 'alto') {
+                coincideTotal = filaTotal > 15000;
+            }
+
+            if (coincideEstado && coincideCliente && coincideFecha && coincideTotal) {
+                fila.style.display = '';
+            } else {
+                fila.style.display = 'none';
+            }
+        });
+    }
+
+    filtroEstado.addEventListener('change', aplicarFiltros);
+    filtroCliente.addEventListener('input', aplicarFiltros);
+    filtroFecha.addEventListener('change', aplicarFiltros);
+    filtroTotal.addEventListener('change', aplicarFiltros);
+});
+
+// Funciones placeholder
+function verDetallesCotizacion(id) {
+    alert('Función de detalles en desarrollo para la cotización ID: ' + id);
+}
+
+function editarCotizacion(id) {
+    alert('Función de edición en desarrollo para la cotización ID: ' + id);
+}
+</script>
+{% endblock %} 
